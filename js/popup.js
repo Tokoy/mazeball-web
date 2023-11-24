@@ -228,6 +228,58 @@ function showScore(){
   scoreContainer.appendChild(scoreText);
 }
 
+// 上下左右移动函数
+function move(direction) {
+  var ballItemColumn = ballItemIndex % gridColumns;
+  var ballItemRow = Math.floor(ballItemIndex / gridColumns);
+  gridItems[ballItemIndex].classList.remove('ball-item');
+  // 根据按键代码确定移动方向
+  switch (direction) {
+    case 'w': // 上移
+      if (ballItemRow > 0) {
+        ballItemIndex -= gridColumns;
+      }
+      break;
+    case 's': // 下移
+      if (ballItemRow < gridRows - 1) {
+        ballItemIndex += gridColumns;
+      }
+      break;
+    case 'a': // 左移
+      if (ballItemColumn > 0) {
+        ballItemIndex -= 1;
+      }
+      break;
+    case 'd': // 右移
+      if (ballItemColumn < gridColumns - 1) {
+        ballItemIndex += 1;
+      }
+      break;
+  }
+
+  // 移动黑色方块
+  gridItems[ballItemIndex].classList.add('ball-item');
+
+  // 更新点击次数
+  clickCount++;
+  clickCountElement.textContent = clickCount.toString();
+
+  // 检查游戏是否结束
+  checkGameOver(ballItemIndex);
+}
+
+// 键盘按下事件监听器
+document.addEventListener('keydown', function(event) {
+  // 获取按键代码
+  var key = event.key.toLowerCase();
+
+  // 根据按键执行相应的移动操作
+  if (key === 'w' || key === 's' || key === 'a' || key === 'd') {
+    event.preventDefault(); // 阻止默认的按键行为
+    move(key);
+  }
+});
+
 //right click
 gridContainer.addEventListener('contextmenu', function(e) {
   e.preventDefault(); // Prevent default right-click menu
