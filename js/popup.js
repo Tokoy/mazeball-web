@@ -152,13 +152,41 @@ function generateMaze(rows, cols, density = 0.2, complexity = 0.2) {
   let startY = Math.floor(cols / 2);
   carve(startX, startY);
 
+  // 检查起始位置和目标位置之间是否存在可行路径
+  function hasPath(startX, startY, targetX, targetY) {
+    let visited = Array(rows).fill(null).map(() => Array(cols).fill(false));
+    let queue = [[startX, startY]];
+    visited[startX][startY] = true;
+
+    while (queue.length > 0) {
+      let [x, y] = queue.shift();
+
+      if (x === targetX && y === targetY) {
+        return true; // 存在可行路径
+      }
+
+      let directions = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+      for (let [dx, dy] of directions) {
+        let nx = x + dx, ny = y + dy;
+        if (isInMaze(nx, ny) && !visited[nx][ny] && !pathGrid[nx][ny]) {
+          visited[nx][ny] = true;
+          queue.push([nx, ny]);
+        }
+      }
+    }
+
+    return false; // 不存在可行路径
+  }
+
   for (let x = 0; x < rows; x++) {
       for (let y = 0; y < cols; y++) {
           if ((Math.random() < density && !pathGrid[x][y]) || (Math.random() < complexity && pathGrid[x][y])) {
+            if (!hasPath(startX, startY, x, y))  {
               var ind = getIndex(x,y);
               gridItems[ind].classList.add('boom-item'); 
               maze.push(ind);
               bombIndices.push(ind);
+            }
           }
       }
   }
