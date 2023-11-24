@@ -227,6 +227,48 @@ function showScore(){
   var scoreText = document.createTextNode("Your Score is " + score);
   scoreContainer.appendChild(scoreText);
 }
+var touchStartX, touchStartY;
+
+// 触摸开始事件监听器
+gridContainer.addEventListener('touchstart', function(event) {
+  // 获取起始触摸点的坐标
+  touchStartX = event.touches[0].clientX;
+  touchStartY = event.touches[0].clientY;
+});
+
+// 触摸结束事件监听器
+gridContainer.addEventListener('touchend', function(event) {
+  // 获取结束触摸点的坐标
+  var touchEndX = event.changedTouches[0].clientX;
+  var touchEndY = event.changedTouches[0].clientY;
+
+  // 计算触摸滑动的距离和方向
+  var deltaX = touchEndX - touchStartX;
+  var deltaY = touchEndY - touchStartY;
+  var absDeltaX = Math.abs(deltaX);
+  var absDeltaY = Math.abs(deltaY);
+
+  // 判断滑动方向
+  if (absDeltaX > absDeltaY) {
+    // 水平滑动
+    if (deltaX > 0) {
+      // 向右滑动
+      move('d');
+    } else {
+      // 向左滑动
+      move('a');
+    }
+  } else {
+    // 垂直滑动
+    if (deltaY > 0) {
+      // 向下滑动
+      move('s');
+    } else {
+      // 向上滑动
+      move('w');
+    }
+  }
+});
 
 // 上下左右移动函数
 function move(direction) {
