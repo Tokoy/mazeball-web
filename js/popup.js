@@ -28,8 +28,9 @@ var option2 = document.getElementById('option2');
 var rank = document.getElementById('rank');
 var bar = document.getElementById('bar');
 var btnrty = document.getElementById('btnrty');
+var btnup = document.getElementById('btnup');
 var github = document.getElementById('github');
-
+var uniqueId = generateUniqueId();
 //INIT THE GAME
 init();
 startCountdown();
@@ -75,6 +76,20 @@ function resetTime(){
   timeRemaining = 15 * 1000;
   countdownDisplay.textContent = '00:15:000';
 }
+
+function generateUniqueId() {
+  // UUID
+  function uuidv4() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0,
+          v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+      });
+  }
+  
+  return uuidv4();
+  }
+  
 
 // Generate grid items
 function generateGrid() {
@@ -218,6 +233,7 @@ function gameover(){
 
 function init(){
   buttonContainer.style.display = 'none';
+  btnup.disabled = false;
   btnrty.addEventListener("click", function() {
     startTime = new Date();
     clickCount = 0;
@@ -228,6 +244,31 @@ function init(){
     init();
     startCountdown();
   });
+
+  btnup.addEventListener("click", function() {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var totaltime = Math.floor((endTime - startTime) / 1000);
+    var raw = JSON.stringify({
+      "key": uniqueId,
+      "value": `{\"level\":${level},\"click\":${clickCount},\"time\":${totaltime}}`
+    });
+    
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+    
+    fetch("https://game.ikeno.top/update", requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.log('error', error));
+    
+      btnup.disabled = true;
+  });
+
   // remove all items in gridContainer
   while (gridContainer.firstChild) {
     gridContainer.removeChild(gridContainer.firstChild);
@@ -484,7 +525,10 @@ function createTable(data) {
       td.textContent = value;
       dataRow.appendChild(td);
     });
-    
+    // user score
+    if (uniqueId === item.id) {
+      dataRow.style.color = 'blue';
+    }
     tbody.appendChild(dataRow);
   });
   table.appendChild(tbody);
