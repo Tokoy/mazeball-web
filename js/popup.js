@@ -140,7 +140,7 @@ function getIndex(row, column) {
   return row * 10 + column;
 }
 
-function generateMaze(rows, cols, density = 0.2, complexity = 0.2) {
+function generateMaze(rows, cols, density = 0.2, complexity = 0.5) {
   let maze = [];
   bombIndices = [];
   let pathGrid = Array(rows).fill(null).map(() => Array(cols).fill(false));
